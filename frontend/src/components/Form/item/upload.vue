@@ -134,8 +134,9 @@ export default {
         }) {
             const chunks = this.slice(file)
             const rate_avg = 100 / chunks.length
-            let finished = 1
-            const total = chunks.length
+            // let finished = 1
+            // const total = chunks.length
+            const tasks = []
             chunks.forEach(async (v, k) => {
                 let rate = (k / chunks.length) * 100
                 // console.log(rate_avg, rate)
@@ -161,28 +162,47 @@ export default {
                 }
 
                 const formData = new FormData()
+                formData.append('filename', file.name)
+                formData.append('chunk', k + 1)
                 formData.append(filename, v)
                 if (data) {
                     Object.keys(data).forEach(k2 => {
                         formData.append(k2, data[k2])
                     })
                 }
-
-                const result = await this.$api.$request.post(
-                    action,
-                    formData,
-                    headers,
-                    config
+                tasks.push(
+                    this.$api.$request.post(action, formData, headers, config)
                 )
+                // const result = await this.$api.$request.post(
+                //     action,
+                //     formData,
+                //     headers,
+                //     config
+                // )
 
-                finished += 1
-                if (finished == total) {
-                    file.percent = 100
-                    onProgress(file)
+                // if (result.code !== 200) {
+                //     onError(result.message)
+                // }
 
-                    await this.$utils.setTimeout(300)
-                    onSuccess(file)
-                }
+                // finished += 1
+                // if (finished == total) {
+                //     file.percent = 100
+                //     onProgress(file)
+
+                //     await this.$utils.setTimeout(300)
+                //     onSuccess(file)
+                // }
+            })
+
+            Promise.all(tasks).then(async res => {
+                console.log(res)
+                file.percent = 100
+                onProgress(file)
+                this.$api.$request.put(action, {
+                    filename: file.name
+                })
+                await this.$utils.setTimeout(300)
+                onSuccess(file)
             })
         },
 

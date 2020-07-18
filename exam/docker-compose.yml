@@ -1,0 +1,43 @@
+version: '3'
+services:
+  httpd:
+    image: 'httpd:2.4.41-alpine'
+    hostname: httpd
+    working_dir: /app
+    ports:
+      - 8001:80
+    restart: unless-stopped
+    volumes:
+      - ./:/app:rw
+      - ./docker/services/httpd/httpd.conf:/usr/local/apache2/conf/httpd.conf:ro # apache 配置
+      - ./docker/services/httpd/httpd-vhosts.conf:/usr/local/apache2/conf/extra/httpd-vhosts.conf:ro # vhosts 相关配置
+    links:
+      - php:php
+    networks:
+      - exam
+
+  php:
+    image: 'crunchgeek/php-fpm:7.2-r6'
+    hostname: php
+    working_dir: /app
+    expose:
+      - 9000
+    restart: unless-stopped
+    volumes:
+      - ./:/app:rw
+      - ./docker/services/php/php.ini:/user/local/etc/php/php.ini:ro
+      - ./docker/services/composer/composer.phar:/usr/local/bin/composer:ro
+      - ./docker/services/composer/config.json:/root/.composer/config.json:ro
+      - ./docker/cache/composer:/root/.composer/cache:rw
+    # command:
+    #     - /bin/sh
+    #     - -c
+    #     - |
+    #         sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
+    #         tail -f /dev/null
+    networks:
+      - exam
+
+networks:
+  exam:
+    driver: bridge

@@ -26,11 +26,12 @@ export default {
                     image: {
                         label: '图片',
                         type: 'upload',
-                        action: 'index/index', // 'http://localhost:8001',
+                        action: 'http://localhost:8001',
                         tip: '只支持上传video类型文件',
                         accept: 'video/mp4',
                         multiple: true,
                         // drag: true,
+                        shard: true,
                         // autoUpload: false,
                         fileSize: 200
                     }
@@ -40,7 +41,7 @@ export default {
     },
 
     created() {
-        console.log(this.$api.$request.getConfig('headers')['post'])
+        // console.log(this.$api.$request.getConfig('headers')['post'])
     }
 }
 </script>

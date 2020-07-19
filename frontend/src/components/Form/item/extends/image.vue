@@ -212,8 +212,8 @@ export default {
                 formData
             )
 
-            if (res.success) {
-                this.images = [...this.images, res.data.file_name].filter(
+            if (res.code === 200) {
+                this.images = [...this.images, res.data.path].filter(
                     val => val
                 )
             } else {

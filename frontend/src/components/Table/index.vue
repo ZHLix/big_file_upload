@@ -14,18 +14,18 @@
 import TableTable from './table'
 import TablePagination from './pagination'
 export default {
-  components: { TableTable, TablePagination },
-  props: {
-    value: Array,
-    fields: Object,
-    config: Object
-  },
+    components: { TableTable, TablePagination },
+    props: {
+        value: Array,
+        fields: Object,
+        config: Object
+    },
 
-  methods: {
-    paginationHandle(e) {
-      this.$emit('pagination', e)
+    methods: {
+        paginationHandle(e) {
+            this.$emit('pagination', e)
+        }
     }
-  }
 }
 </script>
 

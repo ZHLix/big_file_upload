@@ -8,24 +8,25 @@ class Api {
         // this.$request = request
         this.$request = new Request(vm, { baseURL: this.$vm.$store.state.baseUrl })
 
+        this.$request.setConfig({ withCredentials: true })
+
         this.$request.setInterceptors({
             request: req => {
-                if (sessionStorage.getItem('authorization')) {
-                    req.headers.authorization = `Bearer ${sessionStorage.getItem('authorization')}`
-                }
+                // if (sessionStorage.getItem('authorization')) {
+                //     req.headers.authorization = `Bearer ${sessionStorage.getItem('authorization')}`
+                // }
 
                 return req
             },
             response: res => {
-                if (res.headers?.authorization) {
-                    sessionStorage.setItem('authorization', res.headers.authorization)
-                }
+                // if (res.headers?.authorization) {
+                //     sessionStorage.setItem('authorization', res.headers.authorization)
+                // }
 
-                if (res.data.code == 500 && res.data.msg == 'token无效或已过期' && this.tokenStatus == true) {
-                    this.tokenStatus = false
+                if (res.data.code == 400 && res.data.msg == '未登录，禁止访问') {
                     this.$vm.$message.warning('登录已失效，请重新登录')
                     this.$vm.$nextTick(() => {
-                        this.User.logout()
+                        this.Login.logout()
                     })
                 }
 

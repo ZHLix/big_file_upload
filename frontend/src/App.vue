@@ -1,8 +1,52 @@
 <template>
   <div id="app">
-    <router-view />
+    <c-layout v-if="is_login">
+      <div slot="header">
+        <c-user></c-user>
+      </div>
+      <router-view />
+    </c-layout>
+    <router-view v-else />
   </div>
 </template>
+
+<script>
+import CLayout from '@/components/Layout'
+import CUser from '@/components/User/top'
+export default {
+    components: { CLayout, CUser },
+    data() {
+        return {
+            nav: [
+                {
+                    name: 'course-index',
+                    title: '课程管理',
+                    icon: 'el-icon-collection'
+                },
+                {
+                    name: 'select',
+                    title: '查看使用班级',
+                    icon: 'el-icon-school'
+                }
+            ]
+        }
+    },
+    computed: {
+        is_login() {
+            return this.$store.state.isLogin
+        }
+    },
+
+    created() {
+        this.$store.dispatch(
+            'isCollapse',
+            localStorage.getItem('isCollapse') == 'true'
+        )
+
+        this.$store.dispatch('nav', this.nav)
+    }
+}
+</script>
 
 
 <style lang="scss">

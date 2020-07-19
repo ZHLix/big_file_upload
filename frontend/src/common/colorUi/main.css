@@ -2975,7 +2975,7 @@ scroll-view.cu-steps .cu-item {
 /*  -- flex弹性布局 -- */
 
 .flex {
-    display: flex;
+    display: flex !important;
 }
 
 .basis-xs {

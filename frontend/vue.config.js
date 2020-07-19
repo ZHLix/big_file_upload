@@ -20,7 +20,6 @@ module.exports = {
         }
     },
     devServer: {
-        open: true,
         proxy: {        //配置多个代理跨域(配置一个 proxy: 'http://localhost:4000' )
             '/': {
                 target: 'http://localhost:8001',

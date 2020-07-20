@@ -24,7 +24,7 @@ export default {
                     icon: 'el-icon-collection'
                 },
                 {
-                    name: 'select',
+                    name: 'statistics-class/index',
                     title: '查看使用班级',
                     icon: 'el-icon-school'
                 }

@@ -22,6 +22,18 @@ Route::group('', function () {
         Route::post('del', 'course/del');
     });
 
+    Route::group('smallCourse', function () {
+        Route::post('', 'smallCourse/index');
+        // Route::post('create', 'smallCourse/create');
+        Route::post('edit', 'smallCourse/edit');
+        // Route::post('del', 'smallCourse/del');
+    });
+
+    Route::group('school', function () {
+        Route::post('GetClassStudy', 'schoolClass/index');
+        Route::post('GetClassDetails', 'schoolClass/detail');
+    });
+
     Route::group('user', function () {
         Route::post('changePassword', 'user/changePassword');
     });

@@ -10,7 +10,7 @@ let is_login = sessionStorage.getItem('authorization') && sessionStorage.getItem
 if (is_login) store.dispatch('isLogin', Boolean(is_login))
 
 const IndexIndex = routes.findIndex(v => v.name === 'index')
-routes[IndexIndex] = Object.assign(routes[IndexIndex], { redirect: '/select' })
+routes[IndexIndex] = Object.assign(routes[IndexIndex], { redirect: '/statistics/class/index' })
 
 const router = new VueRouter({
     mode: 'hash',

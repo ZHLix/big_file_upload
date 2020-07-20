@@ -10,19 +10,19 @@ export default class Course extends Base {
                     // image: { label: '图片' },
                     name: { label: '课程名称' },
                     teacher_name: { label: '讲师名' },
-                    // course_class: {
-                    //     label: '小课管理', render: (h, text, row) => {
-                    //         // const h = this.$vm.$createElement
-                    //         return h('el-button', {
-                    //             attrs: { size: 'mini', type: 'text' },
-                    //             on: { click: () => this.courseClass(row) }
-                    //         }, '管理')
-                    //     }
-                    // },
+                    course_class: {
+                        label: '小课管理', render: (h, text, row) => {
+                            // const h = this.$vm.$createElement
+                            return h('el-button', {
+                                attrs: { size: 'mini', type: 'text' },
+                                on: { click: () => this.courseClass(row) }
+                            }, '管理')
+                        }
+                    },
                     ...this.tableToolbar({
                         create: {
                             title: '添加', type: 'primary', size: 'mini', header: true, click: () => {
-                                console.log(this.$vm)
+                                // console.log(this.$vm)
                                 this.$vm.tableHandle({}, 'create')
                             }
                         },
@@ -117,7 +117,7 @@ export default class Course extends Base {
 
 
     edit (req, id, row) {
-        console.log(req)
+        // console.log(req)
         if (!this.isEdit(req, row)) {
             return this.result(null, 400, '数据无修改')
         }

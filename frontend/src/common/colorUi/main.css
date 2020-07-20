@@ -3023,6 +3023,10 @@ scroll-view.cu-steps .cu-item {
     flex-direction: column;
 }
 
+.flex-row {
+    flex-direction: row;
+}
+
 .flex-wrap {
     flex-wrap: wrap;
 }

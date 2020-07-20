@@ -6,43 +6,43 @@ export default {
     },
 
     computed: {
-        _value: {
-            get() {
-                let tmp = this.value
-                if (typeof tmp === 'string') {
-                    tmp = tmp.split(',').filter(v => v)
-                }
-                console.log(tmp, this.cache)
-                const res = tmp.map(v => {
-                    const old = this.cache.find(
-                        v2 => (v2.url ?? v2.response.url) == v
-                    )
-                    if (old) return old
-                    return {
-                        name: v.match(/\/([^/]*)$/)[1],
-                        url: v
-                    }
-                })
-                console.log(res)
-                return res
-            },
-            set(v) {
-                function isEdit(data, row) {
-                    let data_re = {}
-                    Object.keys(data).forEach(k => {
-                        data_re[k] = row[k]
-                    })
-                    return JSON.stringify(data) !== JSON.stringify(data_re)
-                }
-                if (isEdit(v, this.cache)) {
-                    this.cache = v
-                    console.log('isEdit')
-                    this.$emit(
-                        'input',
-                        v.map(v => v.url ?? v.response.url).join(',')
-                    )
-                }
+        _value() {
+            let tmp = this.value
+            if (typeof tmp === 'string') {
+                tmp = tmp.split(',').filter(v => v)
             }
+            // console.log(tmp, this.cache)
+            const res = tmp.map(v => {
+                // const old = this.cache.find(
+                //     v2 => (v2.url ?? v2.response.url) == v
+                // )
+                // const old = this.cache?.[k]
+                // if (old && (old.url ?? old.response.url) == v) return old
+                // console.log(v)
+                return {
+                    name: v.match(/\/([^/]*)$/)[1],
+                    url: v
+                }
+            })
+            return res
+            // },
+            // set(v) {
+            //     function isEdit(data, row) {
+            //         let data_re = {}
+            //         Object.keys(data).forEach(k => {
+            //             data_re[k] = row[k]
+            //         })
+            //         return JSON.stringify(data) !== JSON.stringify(data_re)
+            //     }
+            //     if (isEdit(v, this.cache)) {
+            //         this.cache = v
+            //         console.log('isEdit')
+            //         this.$emit(
+            //             'input',
+            //             v.map(v => v.url ?? v.response.url).join(',')
+            //         )
+            //     }
+            // }
         },
 
         /**
@@ -60,8 +60,21 @@ export default {
     data() {
         return {
             cache: [],
-            // fileList: [],
+            fileList: [],
+            init: false,
             cancels: {}
+        }
+    },
+
+    watch: {
+        value() {
+            // console.log('this init', this.init)
+            if (!this.init) {
+                // console.log(this._value)
+                this.fileList = this._value
+
+                this.init = true
+            }
         }
     },
 
@@ -160,20 +173,22 @@ export default {
             })
             this.cancels[file.name] = cancels
 
-            await this.$api.$request.$axios
+            const res = await this.$api.$request.$axios
                 .all(tasks)
                 .then(res => {
                     res = res[res.length - 1]
                     delete this.cancels[file.name]
                     file.percent = 100
                     onProgress(file)
-                    onSuccess(this.trim(res.path))
+                    return this.trim(res.data.path)
                 })
                 .catch(err => {
                     delete this.cancels[file.name]
                     cancels.forEach(c => c(err.message))
                     this.$message.error(err.message)
                 })
+            onSuccess(res)
+            return res
         },
 
         slice(file, piece = 1024 * 1024 * 5) {
@@ -194,47 +209,89 @@ export default {
         },
 
         onPreview(row) {
-            console.log(row)
+            // console.log(row)
         },
-        onSuccess(row) {
+        onSuccess(row, file) {
             // console.log('onSuccess', row, this._value)
             // this.addFile(row.url)
-            // console.log(this.$refs.upload.uploadFiles)
-            this._value = this.$refs.upload.uploadFiles
+            // this._value = [...this._value, file]
+            // console.log('file response', file.response)
+            // console.log(file, this.$refs.upload.fileList, this.$refs.upload.uploadFiles)
+            // this.$nextTick(() => {
+            // console.log(
+            //     this.$refs.upload.fileList,
+            //     this.$refs.upload.uploadFiles
+            // )
+            // this._value = this.$refs.upload.uploadFiles
+            // })
+            // const update_length =
+            //     this.$refs.upload.uploadFiles.length - this._value.length
+            // console.log('update_length', update_length)
+            // if (this.fileList !== update_length - 1) {
+            //     this.fileList = [...this.fileList, file]
+            // } else {
+            //     this._value = this.$refs.upload.uploadFiles
+            // }
+            // if (
+            //     file.uid ===
+            //     this.$refs.upload.uploadFiles[
+            //         this.$refs.upload.uploadFiles.length - 1
+            //     ].uid
+            // ) {
+            //     console.log('last end')
+            //     this._value = this.$refs.upload.uploadFiles
+            // }
+            this.input()
         },
         onRemove(file) {
             // console.log(this.$refs.upload)
-            file && this.cancels[file.name]?.forEach(c => c('终止上传', 200))
+            file && this.cancels[file.name]?.forEach(c => c('终止上传'))
             // this.delFile(file.url ?? file.response)
             // this.delFile(file)
-            this._value = this.$refs.upload.uploadFiles
+            // this._value = this.$refs.upload.uploadFiles
+            this.input()
+        },
+        // beforeRemove(file, fileList) {
+        //     console.log('beforeRemove', file, fileList)
+        //     file && this.cancels[file.name]?.forEach(c => c('终止上传', 200))
+        //     return Promise.reject(file)
+        // },
+
+        input() {
+            const val = this.$refs.upload.uploadFiles
+                .map(v => v.url ?? v.response?.url ?? null)
+                .filter(v => v)
+            // console.log(this.$refs.upload.uploadFiles, val)
+            this.$emit('input', val.join(','))
         },
 
-        addFile(url) {
-            // this._value = this._value.concat({
-            //     name: url.match(/\/([^/]*)$/)[1],
-            //     url
-            // })
-            this._value.push({
-                name: url.match(/\/([^/]*)$/)[1],
-                url
-            })
-        },
+        // addFile(url) {
+        // this._value = this._value.concat({
+        //     name: url.match(/\/([^/]*)$/)[1],
+        //     url
+        // })
+        //     this._value.push({
+        //         name: url.match(/\/([^/]*)$/)[1],
+        //         url
+        //     })
+        // },
 
         trim(url) {
             return {
                 name: url.match(/\/([^/]*)$/)[1],
                 url
             }
-        },
-
-        delFile(url) {
-            this._value = this._value.filter(v => v.uid !== url.uid)
         }
+
+        // delFile(url) {
+        //     this._value = this._value.filter(v => v.uid !== url.uid)
+        // }
     },
 
-    mounted() {
-        this.fileList = this._value
+    async mounted() {
+        await this.$utils.setTimeout(100)
+        this.init = true
+        // this.fileList = this._value
     },
 
     render(h) {
@@ -274,15 +331,16 @@ export default {
                         action: '',
                         withCredentials: true,
                         name: 'file',
-                        fileList: this._value,
+                        // fileList: this.fileList,
                         onPreview: this.onPreview,
                         onSuccess: this.onSuccess,
                         onRemove: this.shard ? this.onRemove : undefined,
+                        // beforeRemove: this.beforeRemove,
                         beforeUpload: this.beforeUpload, // 上传前回调
                         httpRequest: this.shard ? this.httpRequest : undefined, // 自定义上传
                         headers: this.config.headers ?? {}
                     },
-                    { fileList: this._value },
+                    { fileList: this.fileList },
                     this.config
                 )
                 // on: {

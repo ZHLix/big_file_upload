@@ -6,7 +6,7 @@
  -->
 <template>
   <div class="layout-container flex flex-direction">
-    <el-container class="flex-sub flex flex-wrap">
+    <el-container class="flex-sub flex flex-row">
 
       <!--left start-->
       <el-menu class="menu left el-menu-vertical"

@@ -1,5 +1,5 @@
 import Base from '../base'
-// import Md5 from 'js-md5'
+import Md5 from 'js-md5'
 
 export default class CourseExam extends Base {
     courseApi = null
@@ -59,7 +59,7 @@ export default class CourseExam extends Base {
                         ]
                     },
                     options: {
-                        label: '选项', type: 'input-add', rules: [
+                        label: '选项(回车添加)', type: 'input-add', rules: [
                             { required: true, message: '必填项不能为空' }
                         ]
                     },
@@ -89,7 +89,7 @@ export default class CourseExam extends Base {
         const exam = this.getExam()
 
         // eslint-disable-next-line no-undef
-        const item = Object.assign({}, req, { id: md5(JSON.stringify(req)) })
+        const item = Object.assign({}, req, { id: Md5(JSON.stringify(req)) })
         exam.push(item)
         const { code, success, msg } = await this.courseApi.edit(Object.assign({}, this.course, { exam: JSON.stringify(exam) }), this.course.id, Object.assign({}, this.course))
         if (success) {

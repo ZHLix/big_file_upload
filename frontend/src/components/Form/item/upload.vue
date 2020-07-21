@@ -135,6 +135,7 @@ export default {
 
             const chunks = this.slice(file)
             const rate_avg = 100 / chunks.length
+            let rate_cur = 0
             const tasks = []
             chunks.forEach(async (v, k) => {
                 if (k < start) return
@@ -145,14 +146,17 @@ export default {
                         //属性lengthComputable主要表明总共需要完成的工作量和已经完成的工作是否可以被测量
                         //如果lengthComputable为false，就获取不到e.total和e.loaded
                         if (e.lengthComputable) {
-                            const rate_cur =
+                            const rate_cur_tmp =
                                 rate + (e.loaded / e.total) * rate_avg //已上传的比例
-                            if (rate_cur < 100) {
-                                //这里的进度只能表明文件已经上传到后台，但是后台有没有处理完还不知道
-                                //因此不能直接显示为100%，不然用户会误以为已经上传完毕，关掉浏览器的话就可能导致上传失败
-                                //等响应回来时，再将进度设为100%
-                                e.percent = rate_cur
-                                onProgress(e)
+                            if (rate_cur_tmp > rate_cur) {
+                                rate_cur = rate_cur_tmp
+                                if (rate_cur < 100) {
+                                    //这里的进度只能表明文件已经上传到后台，但是后台有没有处理完还不知道
+                                    //因此不能直接显示为100%，不然用户会误以为已经上传完毕，关掉浏览器的话就可能导致上传失败
+                                    //等响应回来时，再将进度设为100%
+                                    e.percent = rate_cur
+                                    onProgress(e)
+                                }
                             }
                         }
                     }

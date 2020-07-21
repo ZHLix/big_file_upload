@@ -19,14 +19,14 @@ module.exports = {
             // 'html2canvas': ''
         }
     },
-    // devServer: {
-    //     proxy: {        //配置多个代理跨域(配置一个 proxy: 'http://localhost:4000' )
-    //         '/': {
-    //             target: 'http://localhost:8001',
-    //             // target: 'http://3061w905u4.qicp.vip/',
-    //             ws: true,  //是否跨域
-    //             changeOrigin: true,
-    //         }
-    //     }
-    // }
+    devServer: {
+        proxy: {        //配置多个代理跨域(配置一个 proxy: 'http://localhost:4000' )
+            '/': {
+                target: 'http://localhost:8001',
+                // target: 'http://3061w905u4.qicp.vip/',
+                ws: true,  //是否跨域
+                changeOrigin: true,
+            }
+        }
+    }
 }

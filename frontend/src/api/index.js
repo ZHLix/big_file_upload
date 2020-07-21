@@ -26,7 +26,7 @@ class Api {
                 if (res.data.code == 400 && res.data.msg == '未登录，禁止访问') {
                     this.$vm.$message.warning('登录已失效，请重新登录')
                     this.$vm.$nextTick(() => {
-                        this.Login.logout()
+                        this.User.logout()
                     })
                 }
 
